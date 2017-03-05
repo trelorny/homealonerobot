@@ -4,8 +4,8 @@
  */
 void setup() {
   Serial.begin(9600);
-  initEngines(); //In File "motor": Make Initializations
-  
+  initEngines(); //In File "motor": Make Motor Initializations
+  initCompass(); //In File "compass": Make compass initializations
 }
 
 /**

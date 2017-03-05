@@ -56,5 +56,35 @@ void stopEngines() {
   RL.run(RELEASE);
 }
 
+void turnRight(int deltaBearing) {
+  //currHeading is less than target heading
+  int currHeading = getHeading();
+  int targetBearing = (currHeading + deltaBearing) % 360;
 
-/***************** MOTION CONTROL END ************/
+  if (currHeading > targetBearing) {
+    turnRight(360);
+  }
+
+  while (currHeading < targetBearing) {
+    currHeading = getHeading();
+    turnRight();
+    delay(COURSE_CORRECTION_INTERVAL);
+  }
+}
+
+
+
+void holdCourse(int bearing) {
+  printToSerial("Course set to " + (String) bearing);
+  int currBearing = getHeading();
+  if (currBearing < bearing - BEARING_HYSTERESIS) { //We are off course - move to
+    stopEngines();
+    turnLeft();
+  } else if (bearing + BEARING_HYSTERESIS < currBearing) {
+    stopEngines();
+    turnRight();
+  } else {
+    forward();
+  }
+  delay(COURSE_CORRECTION_INTERVAL);
+}
