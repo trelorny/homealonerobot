@@ -27,6 +27,8 @@ void loop() {
   }
 
   holdCourse(BEARING);
+  delay(200);
+  fetchCommand();
 }
 
 
