@@ -56,20 +56,47 @@ void stopEngines() {
   RL.run(RELEASE);
 }
 
+/**
+ * Turning right means: Degrees increase until 359, after that degrees start from 0
+ */
 void turnRight(int deltaBearing) {
-  //currHeading is less than target heading
-  int currHeading = getHeading();
-  int targetBearing = (currHeading + deltaBearing) % 360;
 
-  if (currHeading > targetBearing) {
-    turnRight(360);
-  }
+  int currBearing = getHeading(); 
+  int targetBearing = (currBearing + deltaBearing) % 360;
 
-  while (currHeading < targetBearing) {
-    currHeading = getHeading();
+  boolean hasToMoveOver360 = targetBearing < currBearing; 
+  boolean movedOver360 = !(targetBearing < currBearing);
+  printToSerial("Turing right to " + (String) targetBearing + ", will move over 360: " + (String) hasToMoveOver360);
+  while ((hasToMoveOver360 && !movedOver360) || currBearing < targetBearing) {
+    currBearing = getHeading();
+    if(hasToMoveOver360){
+      movedOver360 = currBearing < BEARING_HYSTERESIS;
+      if(hasToMoveOver360){
+        printToSerial("Moved over 360 at bearing " + (String) currBearing); //Most likely currBearing is between 0 and maybe 2, depends on the turning speed
+        hasToMoveOver360 = false;
+      }
+    }
     turnRight();
     delay(COURSE_CORRECTION_INTERVAL);
   }
+  printToSerial("Right turn complete. Bearing is now " + (String) currBearing);
+}
+
+
+/**
+ * Turning left means: Degrees decreases until 0, after that degrees start from 359
+ */
+void turnLeft(int deltaBearing) {
+
+  int currBearing = getHeading(); 
+  int targetBearing = currBearing - deltaBearing; //Always less than 360 as we are substracting deltaBearing
+  printToSerial("Turing left to " + (String) targetBearing);
+  while (currBearing > targetBearing) {
+    currBearing = getHeading();
+    turnLeft();
+    delay(COURSE_CORRECTION_INTERVAL);
+  }
+  printToSerial("Left turn complete. Bearing is now " + (String) currBearing);
 }
 
 
