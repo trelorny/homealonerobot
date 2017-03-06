@@ -15,21 +15,6 @@ void detachServos() {
   panServo.detach();
 }
 
-void demoPanTilt() {
-  attachServos();
-
-  lookUpSlow();
-  lookDownSlow();
-  centerVerticalSlow();
-
-  lookLeftSlow();
-  lookRightSlow();
-  centerHorizontalSlow();
-
-  detachServos();
-
-}
-
 void pan(int degree) {
   int currentPos = panServo.read();
   if (currentPos <= degree) {
